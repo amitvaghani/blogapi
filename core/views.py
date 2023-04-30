@@ -67,7 +67,6 @@ class BlogPostDetail(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
         post = self.get_object(pk)
@@ -75,17 +74,17 @@ class BlogPostDetail(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class CommentList(APIView):
+class CommentView(APIView):
     permission_classes = (IsAuthenticated,IsAuthorOrReadOnly)
 
     def get_object(self, post_pk):
         return get_object_or_404(BlogPost, pk=post_pk)
 
-    def get(self, request, post_pk, format=None):
-        post = self.get_object(post_pk)
-        comments = post.comments.all()
-        serializer = CommentSerializer(comments, many=True)
-        return Response(serializer.data)
+    # def get(self, request, post_pk, format=None):
+    #     post = self.get_object(post_pk)
+    #     comments = post.comments.all()
+    #     serializer = CommentSerializer(comments, many=True)
+    #     return Response(serializer.data)
 
     def post(self, request, post_pk, format=None):
         post = self.get_object(post_pk)
@@ -112,19 +111,19 @@ class Like(APIView):
             message = 'You liked this post.'
         return Response({'message': message})
 
-class ReplyList(APIView):
-    permission_classes = (IsAuthenticated,IsAuthorOrReadOnly)
+class ReplyView(APIView):
+    permission_classes = (IsAuthenticated,)
 
     def get_object(self, post_pk, comment_pk):
         post = get_object_or_404(BlogPost, pk=post_pk)
         comment = get_object_or_404(post.comments.all(), pk=comment_pk)
         return comment
 
-    def get(self, request, post_pk, comment_pk, format=None):
-        comment = self.get_object(post_pk, comment_pk)
-        replies = comment.replies.all()
-        serializer = ReplySerializer(replies, many=True)
-        return Response(serializer.data)
+    # def get(self, request, post_pk, comment_pk, format=None):
+    #     comment = self.get_object(post_pk, comment_pk)
+    #     replies = comment.replies.all()
+    #     serializer = ReplySerializer(replies, many=True)
+    #     return Response(serializer.data)
 
     def post(self, request, post_pk, comment_pk, format=None):
         comment = self.get_object(post_pk, comment_pk)
